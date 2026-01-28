@@ -19,10 +19,10 @@ To build and run this kernel, you will need the following tools:
 ### Build and Run
 ```bash
 # Clone the repository
-git clone [https://github.com/yourusername/your-project-name.git](https://github.com/yourusername/your-project-name.git)
+git clone [https://github.com/alanysfgl/my-kernel-project.git](https://github.com/alanysfgl/my-kernel-project.git)
 
 # Navigate to the project directory
-cd your-project-name
+cd my-kernel-project
 
 # Compile the project
 make all
