@@ -19,10 +19,10 @@ To build and run this kernel, you will need the following tools:
 ### Build and Run
 ```bash
 # Clone the repository
-git clone [https://github.com/alanysfgl/my-kernel-project.git](https://github.com/alanysfgl/my-kernel-project.git)
+git clone [https://github.com/alanysfgl/my-kernel-project.git](https://github.com/alanysfgl/Learning-OS-Project.git)
 
 # Navigate to the project directory
-cd my-kernel-project
+cd Learning-OS-Project
 
 # Compile the project
 make all
