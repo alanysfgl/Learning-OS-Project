@@ -14,3 +14,4 @@ gdt_flush:
     jmp 0x08:.flush   ; 0x08 code segmentine uzak zıplama (Far Jump)
 .flush:
     ret
+section .note.GNU-stack noalloc noexec nowrite progbits

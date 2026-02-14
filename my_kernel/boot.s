@@ -23,3 +23,4 @@ _start:
 .hang:                         ; Kernel'dan dönülürse sonsuz döngüye gir
     hlt
     jmp .hang
+section .note.GNU-stack noalloc noexec nowrite progbits

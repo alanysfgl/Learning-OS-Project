@@ -14,8 +14,9 @@ The primary goal of this kernel is to provide hands-on experience with:
 
 - GDT initialization
 - IDT initialization
-- Basic exception handler (divide-by-zero)
-- Keyboard IRQ handling
+- Exception handlers for ISR 0-31 with readable panic output
+- Keyboard IRQ (IRQ1) handling
+- PIT timer IRQ (IRQ0) tick counter output
 - VGA text-mode output with cursor update and scroll
 
 ## 🛠️ Prerequisites
@@ -46,8 +47,6 @@ make run
 
 ## 🗺️ Short Roadmap
 
-1. Expand exception coverage (ISR 0–31)
-2. Add PIT timer tick handling (IRQ0)
-3. Improve keyboard handling (shift/caps/backspace behavior)
-4. Start memory management (paging + basic kmalloc)
-5. Add a tiny command shell (`help`, `clear`, `ticks`, `meminfo`)
+1. Improve keyboard handling (shift/caps/backspace behavior)
+2. Start memory management (paging + basic kmalloc)
+3. Add a tiny command shell (`help`, `clear`, `ticks`, `meminfo`)
