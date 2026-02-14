@@ -46,6 +46,16 @@ void monitor_put(char c) {
     if (c == '\n') {
         cursor_x = 0;
         cursor_y++;
+    } else if (c == '\b') {
+        if (cursor_x > 0) {
+            cursor_x--;
+        } else if (cursor_y > 0) {
+            cursor_y--;
+            cursor_x = COLUMNS - 1;
+        }
+
+        u16int *location = video_memory + (cursor_y * COLUMNS + cursor_x);
+        *location = ' ' | attribute;
     } else if (c >= ' ') {
         u16int *location = video_memory + (cursor_y * COLUMNS + cursor_x);
         *location = c | attribute;
