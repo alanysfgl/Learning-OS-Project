@@ -84,6 +84,16 @@ unsigned char kbdus[128] = {
     'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*', 0, ' '
 };
 
+unsigned char kbdus_shift[128] = {
+    0,  27, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b',
+    '\t', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n',
+    0, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', '~', 0, '|',
+    'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0, '*', 0, ' '
+};
+
+u8int shift_pressed = 0;
+u8int caps_lock_on = 0;
+
 // Kayıt ekleme fonksiyonu
 void idt_set_gate(unsigned char num, unsigned int base, unsigned short sel, unsigned char flags) {
     idt_entries[num].base_low = base & 0xFFFF;
@@ -132,9 +142,39 @@ void irq_handler(struct registers regs) {
     // Klavye Kesmesi (IRQ 1 -> IDT 33)
     else if (regs.int_no == 33) {
         unsigned char scancode = inb(0x60);
-        if (scancode < 128) {
-            char c = kbdus[scancode];
-            monitor_put(c);
+
+        // Shift press/release
+        if (scancode == 0x2A || scancode == 0x36) {
+            shift_pressed = 1;
+        } else if (scancode == 0xAA || scancode == 0xB6) {
+            shift_pressed = 0;
+        }
+        // Caps Lock toggle
+        else if (scancode == 0x3A) {
+            caps_lock_on = !caps_lock_on;
+        }
+        // Key release event
+        else if (scancode & 0x80) {
+            // ignore
+        }
+        // Key press event
+        else if (scancode < 128) {
+            char c;
+            char base = kbdus[scancode];
+
+            if (base >= 'a' && base <= 'z') {
+                if (shift_pressed ^ caps_lock_on) {
+                    c = base - ('a' - 'A');
+                } else {
+                    c = base;
+                }
+            } else {
+                c = shift_pressed ? kbdus_shift[scancode] : base;
+            }
+
+            if (c) {
+                monitor_put(c);
+            }
         }
     }
 
