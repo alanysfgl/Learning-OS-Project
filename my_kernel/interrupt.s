@@ -60,7 +60,8 @@ ISR_NOERRCODE 29
 ISR_ERRCODE   30
 ISR_NOERRCODE 31
 
-; Hardware IRQs (currently only keyboard)
+; Hardware IRQs
+IRQ 0, 32
 IRQ 1, 33
 
 common_stub:

@@ -20,6 +20,7 @@ void* memory_set(void *dest, int val, unsigned int len) {
 
 // Assembly'den gelecek fonksiyonlar
 extern void idt_flush(unsigned int);
+extern void irq0();  // PIT timer
 extern void irq1();  // Klavye
 extern void monitor_put(char c); // monitor.c'den al
 extern void monitor_write(char *text);
@@ -61,6 +62,8 @@ extern void isr31();
 struct idt_entry_struct idt_entries[256];
 struct idt_ptr_struct   idt_ptr;
 
+volatile u32int timer_ticks = 0;
+
 const char *exception_messages[32] = {
     "Division By Zero", "Debug", "Non Maskable Interrupt", "Breakpoint",
     "Into Detected Overflow", "Out of Bounds", "Invalid Opcode", "No Coprocessor",
@@ -97,9 +100,9 @@ void init_pic() {
     outb(0x21, 0x04); outb(0xA1, 0x02);
     outb(0x21, 0x01); outb(0xA1, 0x01);
     
-    // KRİTİK: Sadece klavyeye (IRQ 1) izin ver, diğerlerini maskele
-    // 0xFD -> 11111101 (Sadece 1. bit yani IRQ 1 açık)
-    outb(0x21, 0xFD); 
+    // KRİTİK: Timer (IRQ0) ve klavyeye (IRQ1) izin ver, diğerlerini maskele
+    // 0xFC -> 11111100 (0. ve 1. bit açık)
+    outb(0x21, 0xFC); 
     outb(0xA1, 0xFF); // Slave PIC tamamen kapalı
 }
 // Tüm kesmelerin toplandığı ana yakalayıcı
@@ -121,6 +124,10 @@ void irq_handler(struct registers regs) {
         for (;;) {
             asm volatile("hlt");
         }
+    }
+    // Timer Kesmesi (IRQ 0 -> IDT 32)
+    else if (regs.int_no == 32) {
+        timer_ticks++;
     }
     // Klavye Kesmesi (IRQ 1 -> IDT 33)
     else if (regs.int_no == 33) {
@@ -181,6 +188,8 @@ void init_idt() {
     idt_set_gate(30, (unsigned int)isr30, 0x08, 0x8E);
     idt_set_gate(31, (unsigned int)isr31, 0x08, 0x8E);
 
+    // IRQ 0: PIT Timer
+    idt_set_gate(32, (unsigned int)irq0, 0x08, 0x8E);
     // IRQ 1: Klavye
     idt_set_gate(33, (unsigned int)irq1, 0x08, 0x8E);
 
@@ -188,4 +197,9 @@ void init_idt() {
     
     // Kesmeleri dünya genelinde aç
     asm volatile("sti");
+}
+
+
+u32int get_timer_ticks() {
+    return timer_ticks;
 }
